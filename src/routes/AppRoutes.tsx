@@ -1,14 +1,14 @@
 import { Routes, Route } from 'react-router-dom';
 
 // Pages
-import Accordion from '../pages/accordion/Accordion';
+import Mcoding from '../pages/mcoding/Mcoding';
 
 
 const AppRoutes = () => {
   return (
     <Routes>
       {/* Public routes */}
-      <Route path="/" element={<Accordion />} />
+      <Route path="/" element={<Mcoding />} />
       {/* <Route path="/about" element={<About />} /> */}
 
       {/* Redirect example */}
