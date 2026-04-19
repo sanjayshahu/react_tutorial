@@ -7,7 +7,10 @@
 // Works in Vite React TS project.
 // Replace your App.tsx with this.
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import * as Sentry from "@sentry/react";
+
+
 
 type Page =
   | "login"
@@ -72,6 +75,10 @@ export default function App() {
   });
 
   const [lastResult, setLastResult] = useState<Transaction | null>(null);
+  useEffect(()=>{
+    Sentry.captureException(new Error("Payment API failed (test)"));
+
+  },[])
 
   const recentTransactions = useMemo(
     () => transactions.slice().reverse(),
