@@ -1,11 +1,13 @@
-import { BrowserRouter } from 'react-router-dom';
-import AppRoutes from './routes/AppRoutes';
+import { BrowserRouter } from "react-router-dom";
+import AppRoutes from "./routes/AppRoutes";
+import RouteTracker from "./routes/RouteTracker.tsx";
 
-import './App.scss';
+import "./App.scss";
 
 const App = () => {
   return (
     <BrowserRouter>
+      <RouteTracker />
       <AppRoutes />
     </BrowserRouter>
   );
