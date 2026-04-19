@@ -1,4 +1,4 @@
-import Accordion from "../../components/mcoding/accordion/Accordion";
+import Accordion from "../../components/finance/Finance";
 
 const Mcoding=()=>{
 return(
