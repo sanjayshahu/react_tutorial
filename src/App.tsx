@@ -1,8 +1,8 @@
 import { BrowserRouter } from "react-router-dom";
 import AppRoutes from "./routes/AppRoutes";
-import RouteTracker from "./routes/RouteTracker.tsx";
+import RouteTracker from "./routes/RouteTracker";
 
-import "./App.scss";
+// import "./App.scss";
 
 const App = () => {
   return (

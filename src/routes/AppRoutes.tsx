@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 
 // Pages
 import Mcoding from '../pages/mcoding/Mcoding';
+import Finance from '../pages/finance/Finance'
 
 
 const AppRoutes = () => {
@@ -9,7 +10,7 @@ const AppRoutes = () => {
     <Routes>
       {/* Public routes */}
       <Route path="/" element={<Mcoding />} />
-      {/* <Route path="/about" element={<About />} /> */}
+      <Route path="/finance" element={<Finance />} />
 
       {/* Redirect example */}
       {/* <Route path="/home" element={<Navigate to="/" replace />} /> */}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import "./styles.scss";
+
 
 type Cell = "X" | "O" | null;
 

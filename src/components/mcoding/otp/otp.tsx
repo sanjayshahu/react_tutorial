@@ -1,5 +1,5 @@
 import { KeyboardEvent, useRef, useState } from "react";
-import "./styles.css";
+
 
 export default function App() {
   const OTP_SIZE = 5;
