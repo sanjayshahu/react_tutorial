@@ -1,136 +1,186 @@
 import {
+  useState,
+  useMemo,
   useCallback,
   useEffect,
-  useMemo,
-  useState,
-  useDeferredValue,
   useTransition,
+  useDeferredValue,
 } from "react";
- import "./pagination.scss";
 
 interface Product {
-  id: number;
+  id: string;
   title: string;
-  images: string[];
 }
 
-interface ProductResponse {
+interface ProductsResponse {
   products: Product[];
   total: number;
 }
 
-const Productcard: React.FC<{ product: Product }> = ({ product }) => {
-  const [iL, sIl] = useState<boolean>(false);
+const PRODUCTS_PER_PAGE = 10;
 
-  return (
-    <div className="product-card">
-      <div className="product-image-container">
-        {!iL && <div className="image-skeleton" data-testid="image-skeleton"></div>}
-
-        <img
-          src={product.images?.[0] || "https://via.placeholder.com/150"}
-          alt={product.title}
-          style={{ display: iL ? "block" : "none" }}
-          onLoad={() => sIl(true)}
-        />
-      </div>
-
-      <span>{product.title}</span>
-    </div>
-  );
-};
-
-export default function App() {
-  const [cP, setCp] = useState<number>(0);
+const App = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
   const [total, setTotal] = useState<number>(0);
+
+  const [currentPage, setCurrentPage] = useState<number>(0);
+
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const [error, setError] = useState<string>("");
+
   const [isPending, startTransition] = useTransition();
 
-  const pageSize = 10;
+  // -----------------------------
+  // Derived state
+  // -----------------------------
 
-  /** FIX 1: Return value added */
-  const skip = useMemo(() => cP * pageSize, [cP]);
+  const skip = useMemo(() => currentPage * PRODUCTS_PER_PAGE, [currentPage]);
 
-  /** FIX 2: Total should update */
+  const totalPages = useMemo(
+    () => Math.ceil(total / PRODUCTS_PER_PAGE),
+    [total]
+  );
+
+  const pageNumbers = useMemo(
+    () => Array.from({ length: totalPages }, (_, index) => index),
+    [totalPages]
+  );
+
+  const deferredProducts = useDeferredValue(products);
+
+  // -----------------------------
+  // API
+  // -----------------------------
+
   const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
 
-      const res = await fetch(
-        `https://dummyjson.com/products?limit=${pageSize}&skip=${skip}`
+      setError("");
+
+      const response = await fetch(
+        `https://dummyjson.com/products?limit=${PRODUCTS_PER_PAGE}&skip=${skip}`
       );
 
-      if (!res.ok) throw new Error("failed to load");
+      if (!response.ok) {
+        throw new Error("Failed to fetch products");
+      }
 
-      const jsonData: ProductResponse = await res.json();
-      setProducts(jsonData.products || []);
-      setTotal(jsonData.total || 0); // <-- FIXED (missing earlier)
-    } catch (error) {
-      console.error("err", error);
+      const data: ProductsResponse = await response.json();
+
+      setProducts(data.products);
+
+      setTotal(data.total);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
       setLoading(false);
     }
   }, [skip]);
 
+  // -----------------------------
+  // Effects
+  // -----------------------------
+
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
 
-  /** FIX 3: return value added */
-  const pages = useMemo(() => Math.ceil(total / pageSize), [total]);
+  // -----------------------------
+  // Handlers
+  // -----------------------------
 
-  /** FIX 4: No iterator issue */
-  const pageNumbers = useMemo(
-    () => Array.from({ length: pages }, (_, i) => i),
-    [pages]
-  );
+  const handlePreviousPage = () => {
+    if (currentPage === 0) return;
 
-  const dP = useDeferredValue(products);
-
-  const pP = () => {
     startTransition(() => {
-      setCp((prev) => Math.max(prev - 1, 0));
+      setCurrentPage((prev) => prev - 1);
     });
   };
 
-  const nP = () => {
+  const handleNextPage = () => {
+    if (currentPage >= totalPages - 1) return;
+
     startTransition(() => {
-      setCp((prev) => Math.min(prev + 1, pages - 1));
+      setCurrentPage((prev) => prev + 1);
     });
   };
 
-  const gP = (index: number) => {
+  const handlePageClick = (pageNumber: number) => {
+    if (pageNumber === currentPage) return;
+
     startTransition(() => {
-      setCp(index);
+      setCurrentPage(pageNumber);
     });
   };
+
+  // -----------------------------
+  // Render states
+  // -----------------------------
+
+  const showLoading = loading || isPending;
+
+  const showEmptyState =
+    !showLoading && !error && deferredProducts.length === 0;
 
   return (
-    <div className="App">
-      <h1>Hello Pagination</h1>
+    <main>
+      <h1>Products</h1>
 
-      <div className="pagination">
-        <button disabled={cP === 0} onClick={pP}>
-          Prev
-        </button>
+      {/* Loading State */}
+      {showLoading && <p role="status">Loading products...</p>}
 
-        <button disabled={cP === pages - 1} onClick={nP}>
-          Next
-        </button>
+      {/* Error State */}
+      {error && <p role="alert">{error}</p>}
 
-        {pageNumbers.map((n) => (
-          <button key={n} onClick={() => gP(n)}>
-            {n + 1}
+      {/* Empty State */}
+      {showEmptyState && <p>No products found.</p>}
+
+      {/* Products List */}
+      {!showLoading && !error && deferredProducts.length > 0 && (
+        <section aria-label="products-list">
+          {deferredProducts.map((product) => (
+            <article key={product.id}>
+              <h2>{product.title}</h2>
+            </article>
+          ))}
+        </section>
+      )}
+
+      {/* Pagination */}
+      {!error && totalPages > 0 && (
+        <nav aria-label="pagination">
+          <button
+            type="button"
+            onClick={handlePreviousPage}
+            disabled={currentPage === 0}
+          >
+            Previous
           </button>
-        ))}
-      </div>
-   {(loading || isPending) && <p>Loading...</p>}
 
+          {pageNumbers.map((pageNumber) => (
+            <button
+              key={pageNumber}
+              type="button"
+              onClick={() => handlePageClick(pageNumber)}
+              aria-current={currentPage === pageNumber ? "page" : undefined}
+            >
+              {pageNumber + 1}
+            </button>
+          ))}
 
-      {dP.map((p) => (
-        <Productcard key={p.id} product={p} />
-      ))}
-    </div>
+          <button
+            type="button"
+            onClick={handleNextPage}
+            disabled={currentPage >= totalPages - 1}
+          >
+            Next
+          </button>
+        </nav>
+      )}
+    </main>
   );
-}
+};
+
+export default App;

@@ -105,7 +105,8 @@ const App = () => {
   // -----------------------------
 
   const handlePreviousPage = () => {
-    if (currentPage === 0) return;
+    // if (currentPage === 0) return;
+    // commented bcoz button is disabled ask management
 
     startTransition(() => {
       setCurrentPage((prev) => prev - 1);
@@ -113,7 +114,7 @@ const App = () => {
   };
 
   const handleNextPage = () => {
-    if (currentPage >= totalPages - 1) return;
+    // if (currentPage >= totalPages - 1) return;
 
     startTransition(() => {
       setCurrentPage((prev) => prev + 1);
@@ -123,7 +124,7 @@ const App = () => {
   const handlePageClick = (
     pageNumber: number
   ) => {
-    if (pageNumber === currentPage) return;
+    // if (pageNumber === currentPage) return;
 
     startTransition(() => {
       setCurrentPage(pageNumber);
