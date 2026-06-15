@@ -445,3 +445,14 @@ test("200ms", 200);   // true
 test("400ms", 400);   // true
 test("600ms", 600);   // false (already 3 calls in 1 sec)
 test("1200ms", 1200); // true (old calls removed)...coz more than 1000 sec passed
+class Service {
+run(t){
+    let l=Date.now();
+    t();
+    let n=Date.now();
+    console.log("rt",n-l);
+    
+}
+}
+const d=new Service();
+d.run(()=>console.log("hi"));
