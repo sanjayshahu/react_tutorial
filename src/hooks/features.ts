@@ -473,3 +473,19 @@ async f(r=3){
 }
 const a=new API();
 a.f();
+
+class Search {
+ constructor(){
+     this.t =null;
+ }
+ s(q) {
+     clearTimeout(this.t);
+     this.t=setTimeout(()=>console.log(q),500);
+     
+ }
+}
+let se=new Search();
+console.log('sync')//this
+se.s('a')
+se.s('b')
+se.s('c')//this
