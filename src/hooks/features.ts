@@ -456,3 +456,20 @@ run(t){
 }
 const d=new Service();
 d.run(()=>console.log("hi"));
+class API {
+async f(r=3){
+    try{
+        return await fetch('url');
+        
+        
+    }catch(e){
+        if(r===0) throw e;
+        
+        this.f(r-1)
+        console.log("rr",r);
+        
+    }
+}
+}
+const a=new API();
+a.f();
