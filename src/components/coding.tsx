@@ -93,3 +93,23 @@ for(let i=bu.length-1;i>=0;i--){
 }
 return res;
 }
+var isValidSudoku = function(board) {
+const r=Array.from({length:9},()=>new Set());
+const c=Array.from({length:9},()=>new Set());
+const b=Array.from({length:9},()=>new Set());
+for(let i=0;i<board.length;i++){
+    for(let j=0;j<board[0].length;j++){
+        if(board[i][j]==='.') continue;
+        const bi=Math.floor(i/3)*3+Math.floor(j/3);
+        const val =board[i][j];
+        if(r[i].has(val)|| c[j].has(val)||b[bi].has(val)) return false;
+        r[i].add(val);
+        c[j].add(val);
+        b[bi].add(val);
+
+    }
+
+}
+return true;
+};
+
