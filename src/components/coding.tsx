@@ -113,3 +113,27 @@ for(let i=0;i<board.length;i++){
 return true;
 };
 
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var longestConsecutive = function(nums) {
+const s= new Set(nums);
+let lo=0
+for(let x of nums){
+    if(!(s.has(x-1))){
+        let c=x;
+        let ct=1;
+        while(s.has(c+1)){
+            c++;
+            ct++;
+            lo=Math.max(lo,ct);
+        }
+    }
+}
+return lo;
+
+
+}
+
+   
